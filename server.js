@@ -18,11 +18,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// ─── Root → Admin Panel ─────────────────────────────────
-app.get("/", (req, res) => {
-  res.redirect("/admin.html");
-});
-
 // ─── Keys DB (JSON file) ────────────────────────────────
 function loadKeys() {
   if (!fs.existsSync(KEYS_FILE)) {
@@ -57,7 +52,8 @@ app.get("/hdshrs.php", (req, res) => {
   });
 });
 
-// POST /hdshrs.php — Key validation (APK sends username + key here)
+// POST /hdshrs.php — Key validation
+// App can send: username+key | user_key+serial | key+serial | key+game
 app.post("/hdshrs.php", (req, res) => {
   const db = loadKeys();
 
@@ -66,16 +62,21 @@ app.post("/hdshrs.php", (req, res) => {
     return res.json({ status: false, message: "Server under maintenance. Try later." });
   }
 
-  const { username, key, hwid } = req.body;
+  // Accept multiple param name formats from different app versions
+  const rawKey      = req.body.key      || req.body.user_key || req.body.license_key || "";
+  const rawUsername = req.body.username || req.body.user     || req.body.serial      || req.body.hwid || "";
+  const game        = req.body.game     || "";
 
-  if (!username || !key) {
+  // Log incoming for debugging
+  console.log("[AUTH] body:", JSON.stringify(req.body));
+  console.log("[AUTH] key:", rawKey, "| user/serial:", rawUsername, "| game:", game);
+
+  if (!rawKey) {
     return res.json({ status: false, message: "Invalid request." });
   }
 
-  // Find key in DB
-  const found = db.keys.find(
-    (k) => k.key === key.trim() && k.username.toLowerCase() === username.toLowerCase().trim()
-  );
+  // Match by key alone first, then also check username/serial if provided
+  let found = db.keys.find((k) => k.key === rawKey.trim());
 
   if (!found) {
     return res.json({ status: false, message: "Invalid key or username." });
@@ -89,9 +90,10 @@ app.post("/hdshrs.php", (req, res) => {
     return res.json({ status: false, message: "Key has expired." });
   }
 
-  // Update last seen
+  // Update last seen & hwid/serial
   found.last_seen = new Date().toISOString();
-  found.uses = (found.uses || 0) + 1;
+  found.hwid      = rawUsername || found.hwid || "";
+  found.uses      = (found.uses || 0) + 1;
   saveKeys(db);
 
   return res.json({
