@@ -1,0 +1,16 @@
+{
+  "keys": [
+    {
+      "id": "demo-001",
+      "username": "testuser",
+      "key": "ANGRY-TEST-1234",
+      "expiry": null,
+      "plan": "Standard",
+      "active": true,
+      "uses": 0,
+      "created": "2026-09-18T00:00:00.000Z",
+      "last_seen": null
+    }
+  ],
+  "maintenance": false
+}

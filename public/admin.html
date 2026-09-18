@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Angry Mod — License Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --card: #16161f;
+      --border: #252535;
+      --accent: #7c3aed;
+      --accent2: #a855f7;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --radius: 12px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Login Screen ── */
+    #loginScreen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 50% 0%, #2d1b6920 0%, transparent 70%);
+    }
+    .login-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px;
+      width: 400px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(124,58,237,0.15);
+    }
+    .login-box .logo {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; margin: 0 auto 20px;
+      box-shadow: 0 8px 32px rgba(124,58,237,0.4);
+    }
+    .login-box h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .login-box p { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+    .login-box input {
+      width: 100%; padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 15px; font-family: 'Inter', sans-serif;
+      outline: none; margin-bottom: 16px;
+      transition: border 0.2s;
+    }
+    .login-box input:focus { border-color: var(--accent); }
+    .btn {
+      padding: 13px 24px;
+      border-radius: var(--radius);
+      border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px; font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; width: 100%;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(124,58,237,0.5); }
+    .btn-sm { padding: 7px 14px; font-size: 12px; border-radius: 8px; }
+    .btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+    .btn-danger:hover { background: rgba(239,68,68,0.25); }
+    .btn-success { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+    .btn-success:hover { background: rgba(34,197,94,0.25); }
+    .btn-warn { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+    .btn-warn:hover { background: rgba(245,158,11,0.25); }
+    .btn-purple { background: rgba(124,58,237,0.15); color: var(--accent2); border: 1px solid rgba(124,58,237,0.3); }
+    .btn-purple:hover { background: rgba(124,58,237,0.25); }
+
+    /* ── Main App ── */
+    #app { display: none; }
+    .sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0; width: 240px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      display: flex; flex-direction: column; gap: 8px;
+      z-index: 100;
+    }
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; margin-bottom: 16px;
+    }
+    .sidebar-logo .icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px; display: flex; align-items: center;
+      justify-content: center; font-size: 20px;
+    }
+    .sidebar-logo span { font-weight: 700; font-size: 15px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; border-radius: 10px;
+      cursor: pointer; font-size: 14px; font-weight: 500;
+      color: var(--muted); transition: all 0.2s;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: rgba(124,58,237,0.12);
+      color: var(--accent2);
+    }
+    .main {
+      margin-left: 240px;
+      padding: 32px;
+      min-height: 100vh;
+    }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 32px;
+    }
+    .topbar h1 { font-size: 24px; font-weight: 700; }
+    .topbar .sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+    /* ── Stats ── */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+    }
+    .stat-card.purple::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .stat-card.green::before { background: var(--green); }
+    .stat-card.red::before { background: var(--red); }
+    .stat-card.yellow::before { background: var(--yellow); }
+    .stat-label { color: var(--muted); font-size: 12px; font-weight: 500; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 28px; font-weight: 800; }
+    .stat-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 28px; opacity: 0.15; }
+
+    /* ── Add Key Form ── */
+    .section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+    .section h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-items: end; }
+    .form-group label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 10px 14px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text);
+      font-size: 13px; font-family: 'Inter', sans-serif; outline: none;
+      transition: border 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+    .form-group select option { background: var(--surface); }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left; padding: 10px 16px;
+      font-size: 11px; font-weight: 600;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 14px 16px; font-size: 13px;
+      border-bottom: 1px solid rgba(37,37,53,0.5);
+      transition: background 0.15s;
+    }
+    tr:hover td { background: rgba(124,58,237,0.04); }
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 600;
+    }
+    .badge-green { background: rgba(34,197,94,0.15); color: var(--green); }
+    .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
+    .badge-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); }
+    .badge-purple { background: rgba(124,58,237,0.15); color: var(--accent2); }
+    .key-text {
+      font-family: monospace; font-size: 12px;
+      background: var(--surface); padding: 4px 10px;
+      border-radius: 6px; border: 1px solid var(--border);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .key-text:hover { border-color: var(--accent); color: var(--accent2); }
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 20px;
+      font-size: 14px; font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      opacity: 0; transform: translateY(10px);
+      transition: all 0.3s; z-index: 9999;
+      display: flex; align-items: center; gap: 10px;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── Maintenance Banner ── */
+    #maintBanner {
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-radius: 10px; padding: 12px 20px;
+      display: none; align-items: center; gap: 10px;
+      margin-bottom: 20px; font-size: 13px; color: var(--yellow);
+    }
+
+    /* ── Empty ── */
+    .empty {
+      text-align: center; padding: 48px;
+      color: var(--muted); font-size: 14px;
+    }
+    .empty .icon { font-size: 48px; margin-bottom: 12px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .form-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="logo">🔑</div>
+    <h1>Angry Mod Admin</h1>
+    <p>Enter admin password to continue</p>
+    <input type="password" id="passInput" placeholder="Admin Password" onkeydown="if(event.key==='Enter')login()"/>
+    <button class="btn btn-primary" onclick="login()">Login →</button>
+    <p id="loginErr" style="color:var(--red);font-size:13px;margin-top:12px;"></p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="icon">😠</div>
+      <span>Angry Mod</span>
+    </div>
+    <div class="nav-item active" onclick="showTab('keys')">🗝️ &nbsp;Keys Manager</div>
+    <div class="nav-item" onclick="showTab('stats')">📊 &nbsp;Stats</div>
+    <div style="flex:1"></div>
+    <div class="nav-item" onclick="toggleMaintenance()">🔧 &nbsp;Maintenance</div>
+    <div class="nav-item" onclick="logout()">🚪 &nbsp;Logout</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>License Key Manager</h1>
+        <div class="sub">Manage user access keys for Angry Mod APK</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="loadKeys()" style="width:auto">⟳ Refresh</button>
+    </div>
+
+    <!-- Maintenance Banner -->
+    <div id="maintBanner">⚠️ &nbsp;<b>Maintenance Mode is ON</b> — All users are blocked from logging in.</div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card purple">
+        <div class="stat-label">Total Keys</div>
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-icon">🗝️</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Active Keys</div>
+        <div class="stat-value" id="statActive">0</div>
+        <div class="stat-icon">✅</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Expired / Disabled</div>
+        <div class="stat-value" id="statInactive">0</div>
+        <div class="stat-icon">❌</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-label">Total Uses</div>
+        <div class="stat-value" id="statUses">0</div>
+        <div class="stat-icon">🔓</div>
+      </div>
+    </div>
+
+    <!-- Add Key Form -->
+    <div class="section">
+      <h2>➕ Add New Key</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Username *</label>
+          <input type="text" id="newUser" placeholder="e.g. player123"/>
+        </div>
+        <div class="form-group">
+          <label>Key (leave blank = auto-generate)</label>
+          <input type="text" id="newKey" placeholder="Auto-generated if empty"/>
+        </div>
+        <div class="form-group">
+          <label>Expiry Date (blank = Lifetime)</label>
+          <input type="date" id="newExpiry"/>
+        </div>
+        <div class="form-group">
+          <label>Plan</label>
+          <select id="newPlan">
+            <option value="Standard">Standard</option>
+            <option value="Premium">Premium</option>
+            <option value="VIP">VIP</option>
+            <option value="Trial">Trial</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn btn-primary btn-sm" onclick="addKey()" style="width:auto;padding:10px 24px">Add Key</button>
+      </div>
+    </div>
+
+    <!-- Keys Table -->
+    <div class="section">
+      <h2 id="keysTitle">🗝️ All Keys</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Username</th>
+              <th>Key</th>
+              <th>Plan</th>
+              <th>Expiry</th>
+              <th>Uses</th>
+              <th>Last Seen</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="keysBody">
+            <tr><td colspan="9"><div class="empty"><div class="icon">📭</div>Loading keys...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+  let adminPass = "";
+  let allKeys = [];
+
+  function login() {
+    const p = document.getElementById("passInput").value;
+    if (!p) return;
+    adminPass = p;
+    loadKeys(true);
+  }
+
+  async function loadKeys(isLogin = false) {
+    try {
+      const res = await fetch("/api/keys", {
+        headers: { "x-admin-password": adminPass }
+      });
+      if (res.status === 401) {
+        if (isLogin) document.getElementById("loginErr").textContent = "Wrong password!";
+        return;
+      }
+      const data = await res.json();
+      allKeys = data.keys || [];
+
+      if (isLogin) {
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("app").style.display = "block";
+      }
+
+      // Maintenance banner
+      const banner = document.getElementById("maintBanner");
+      banner.style.display = data.maintenance ? "flex" : "none";
+
+      renderKeys(allKeys);
+      updateStats(allKeys);
+    } catch (e) {
+      showToast("❌ Server error: " + e.message, "red");
+    }
+  }
+
+  function updateStats(keys) {
+    const active = keys.filter(k => k.active && !k.expired).length;
+    const uses = keys.reduce((a, k) => a + (k.uses || 0), 0);
+    document.getElementById("statTotal").textContent = keys.length;
+    document.getElementById("statActive").textContent = active;
+    document.getElementById("statInactive").textContent = keys.length - active;
+    document.getElementById("statUses").textContent = uses;
+  }
+
+  function renderKeys(keys) {
+    const tbody = document.getElementById("keysBody");
+    if (!keys.length) {
+      tbody.innerHTML = `<tr><td colspan="9"><div class="empty"><div class="icon">📭</div>No keys found. Add one above.</div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = keys.map((k, i) => {
+      const statusBadge = k.expired
+        ? `<span class="badge badge-yellow">Expired</span>`
+        : k.active
+          ? `<span class="badge badge-green">Active</span>`
+          : `<span class="badge badge-red">Disabled</span>`;
+      const planBadge = {
+        Premium: "badge-purple", VIP: "badge-yellow",
+        Trial: "badge-red", Standard: "badge-green"
+      }[k.plan] || "badge-green";
+
+      return `
+        <tr>
+          <td style="color:var(--muted)">${i + 1}</td>
+          <td><b>${escHtml(k.username)}</b></td>
+          <td>
+            <span class="key-text" onclick="copyText('${escHtml(k.key)}', this)" title="Click to copy">
+              ${escHtml(k.key)}
+            </span>
+          </td>
+          <td><span class="badge ${planBadge}">${escHtml(k.plan || 'Standard')}</span></td>
+          <td style="color:var(--muted);font-size:12px">${k.expiry ? k.expiry.split('T')[0] : '<span style="color:var(--green)">Lifetime</span>'}</td>
+          <td>${k.uses || 0}</td>
+          <td style="color:var(--muted);font-size:12px">${k.last_seen ? new Date(k.last_seen).toLocaleString() : '—'}</td>
+          <td>${statusBadge}</td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-sm ${k.active ? 'btn-warn' : 'btn-success'}" onclick="toggleKey('${k.id}')">
+                ${k.active ? 'Disable' : 'Enable'}
+              </button>
+              <button class="btn btn-sm btn-purple" onclick="resetUses('${k.id}')">Reset</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteKey('${k.id}', '${escHtml(k.username)}')">Delete</button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  async function addKey() {
+    const username = document.getElementById("newUser").value.trim();
+    const key = document.getElementById("newKey").value.trim();
+    const expiry = document.getElementById("newExpiry").value;
+    const plan = document.getElementById("newPlan").value;
+
+    if (!username) { showToast("❌ Username is required", "red"); return; }
+
+    const res = await fetch("/api/keys/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-password": adminPass },
+      body: JSON.stringify({ username, key, expiry: expiry || null, plan })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`✅ Key added: ${data.key.key}`, "green");
+      document.getElementById("newUser").value = "";
+      document.getElementById("newKey").value = "";
+      document.getElementById("newExpiry").value = "";
+      loadKeys();
+    } else {
+      showToast("❌ " + (data.error || "Error"), "red");
+    }
+  }
+
+  async function deleteKey(id, username) {
+    if (!confirm(`Delete key for "${username}"?`)) return;
+    const res = await fetch("/api/keys/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-password": adminPass },
+      body: JSON.stringify({ id })
+    });
+    const data = await res.json();
+    if (data.success) { showToast("🗑️ Key deleted", "red"); loadKeys(); }
+  }
+
+  async function toggleKey(id) {
+    const res = await fetch("/api/keys/toggle", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-password": adminPass },
+      body: JSON.stringify({ id })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.active ? "✅ Key enabled" : "⛔ Key disabled", data.active ? "green" : "red");
+      loadKeys();
+    }
+  }
+
+  async function resetUses(id) {
+    const res = await fetch("/api/keys/reset-uses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-password": adminPass },
+      body: JSON.stringify({ id })
+    });
+    const data = await res.json();
+    if (data.success) { showToast("🔄 Use count reset", "purple"); loadKeys(); }
+  }
+
+  async function toggleMaintenance() {
+    const res = await fetch("/api/maintenance", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-password": adminPass },
+      body: JSON.stringify({})
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.maintenance ? "🔧 Maintenance ON — users blocked!" : "✅ Maintenance OFF — server live", data.maintenance ? "yellow" : "green");
+      loadKeys();
+    }
+  }
+
+  function copyText(text, el) {
+    navigator.clipboard.writeText(text);
+    const orig = el.textContent;
+    el.textContent = "✓ Copied!";
+    el.style.color = "var(--green)";
+    setTimeout(() => { el.textContent = orig; el.style.color = ""; }, 1500);
+  }
+
+  function logout() {
+    adminPass = "";
+    document.getElementById("loginScreen").style.display = "flex";
+    document.getElementById("app").style.display = "none";
+    document.getElementById("passInput").value = "";
+  }
+
+  function showTab(tab) {
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+    event.target.classList.add("active");
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  let toastTimer;
+  function showToast(msg, type = "green") {
+    const t = document.getElementById("toast");
+    const colors = { green: "var(--green)", red: "var(--red)", yellow: "var(--yellow)", purple: "var(--accent2)" };
+    t.innerHTML = `<span style="color:${colors[type]||colors.green}">●</span> ${msg}`;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 3000);
+  }
+</script>
+</body>
+</html>
