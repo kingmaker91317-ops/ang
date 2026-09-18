@@ -96,12 +96,22 @@ app.post("/hdshrs.php", (req, res) => {
   found.uses      = (found.uses || 0) + 1;
   saveKeys(db);
 
+  const expStr = found.expiry ? found.expiry.replace("T", " ").substring(0, 19) : "2030-12-31 23:59:59";
+
   return res.json({
     status: true,
-    message: "Login successful!",
+    message: "Login Success",
+    reason: "Login Success",
     username: found.username,
     expiry: found.expiry || "Lifetime",
-    plan: found.plan || "Standard"
+    exp: expStr,
+    plan: found.plan || "Standard",
+    data: {
+      user_key: found.key,
+      expired_date: expStr,
+      seller_name: "AngryMod",
+      registrator: "Admin"
+    }
   });
 });
 
