@@ -18,6 +18,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
+// ─── Root → Admin Panel ─────────────────────────────────
+app.get("/", (req, res) => {
+  res.redirect("/admin.html");
+});
+
 // ─── Keys DB (JSON file) ────────────────────────────────
 function loadKeys() {
   if (!fs.existsSync(KEYS_FILE)) {
